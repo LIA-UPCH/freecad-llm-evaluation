@@ -1,0 +1,1 @@
+Con FreeCAD crea un sólido de 40 x 30 x 10 mm con un agujero pasante de 8 mm de diámetro centrado en (20,15). Guárdalo como T1.FCStd
