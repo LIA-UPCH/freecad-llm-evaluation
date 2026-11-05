@@ -1,0 +1,1 @@
+Con FreeCAD crea una placa de 60 x 40 x 8 mm con cuatro taladros pasantes de 5 mm de diámetro en (8,8), (52,8), (8,32) y (52,32). Guárdala como T2.FCStd
