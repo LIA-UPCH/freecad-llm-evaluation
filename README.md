@@ -1,58 +1,44 @@
-# Evaluación de modelos de lenguaje para FreeCAD
+# Evaluación de modelos de lenguaje en FreeCAD
 
-Investigación exploratoria sobre el uso de modelos de lenguaje de pesos abiertos para ejecutar tareas de modelado paramétrico en FreeCAD mediante herramientas conectadas por Model Context Protocol (MCP).
+Este repositorio reúne las pruebas de un estudio sobre el uso de modelos de lenguaje de pesos abiertos para crear piezas en FreeCAD. Las tareas se ejecutan desde LM Studio mediante un servidor MCP y luego se revisan en FreeCAD.
 
-El proyecto estudia si las piezas generadas cumplen las dimensiones y restricciones solicitadas, y si conservan una estructura de operaciones válida y editable. La evaluación distingue entre lo que informa el modelo y lo que se verifica de manera independiente en FreeCAD.
+Por ahora se ha probado Qwen3.5-9B en cuatro tareas. El trabajo está en una etapa inicial: hay pocos ensayos y algunos incluyen reintentos, por lo que todavía no se puede calcular una tasa de éxito ni comparar modelos.
 
-> **Estado:** estudio piloto en curso. Los resultados documentados corresponden a un modelo y a un número reducido de ensayos; no representan una estimación estadística de fiabilidad.
+## Cómo se evalúan las piezas
 
-## Entorno evaluado
+Cada tarea indica las dimensiones y operaciones que debe tener la pieza. Después de la ejecución, se revisan la validez de la forma, el número de sólidos, las dimensiones y las dependencias entre objetos. Cuando hay una pieza final, también se compara con una geometría de referencia construida por separado.
 
-- **Modelo:** Qwen3.5-9B, formato GGUF Q4_K_M.
-- **Ejecución:** LM Studio 0.4.26+4 y servidor MCP para FreeCAD.
-- **CAD:** FreeCAD 1.1.1.
-- **Hardware:** NVIDIA RTX A6000 de 48 GB.
+Esta revisión importa porque un volumen correcto, por ejemplo, no garantiza que un agujero o un bolsillo esté en la posición pedida. Las comprobaciones realizadas por el modelo se contrastan con las hechas de forma independiente.
 
-Los detalles disponibles sobre el modelo, la memoria y las mediciones se encuentran en [RECURSOS_QWEN.md](RECURSOS_QWEN.md) y [CONTINUIDAD.md](CONTINUIDAD.md).
+## Pruebas realizadas
 
-## Método de evaluación
-
-Cada tarea define una geometría, dimensiones, posiciones y operaciones esperadas. Se conservan los prompts, las conversaciones y los archivos de FreeCAD disponibles. La revisión independiente considera:
-
-1. Validez de la forma y número de sólidos.
-2. Dimensiones, ubicación y profundidad de las operaciones.
-3. Correspondencia con una referencia geométrica construida por separado, mediante diferencias booleanas.
-4. Conservación de objetos y dependencias necesarios para editar el modelo.
-5. Tiempo, recursos y errores registrados cuando están disponibles.
-
-## Resultados preliminares
-
-| Caso | Tarea | Resultado observado |
+| Prueba | Tarea | Resultado |
 | --- | --- | --- |
-| T1 | Placa con agujero central | Geometría correcta, pero corte paramétrico inválido por dependencias eliminadas. |
-| T2 | Placa con cuatro agujeros | Coincidencia geométrica verificada; la placa base no es paramétrica editable. |
-| T3 | Placa con bolsillo ciego | Pieza válida y volumen esperado, pero bolsillo desplazado. |
-| T4 | Placa con agujeros y bolsillo, Think ON | Ejecución incompleta tras errores y tiempos de espera; no hay pieza final verificada. |
+| T1 | Placa con un agujero central | La geometría coincidió con la referencia, pero el corte quedó inválido al eliminarse sus objetos de construcción. |
+| T2 | Placa con cuatro agujeros | La geometría coincidió con la referencia. Se conservaron los cortes, aunque la placa base no es paramétrica editable. |
+| T3 | Placa con un bolsillo ciego | La pieza es válida y tiene el volumen esperado, pero el bolsillo quedó desplazado. |
+| T4 | Placa con agujeros y bolsillo | La corrida con Think ON terminó sin una pieza final verificable, después de errores y tiempos de espera. |
 
-La comparación de T4 con **Think OFF** sigue pendiente. Las ejecuciones incluyen reintentos y no permiten atribuir diferencias a ese modo ni calcular una tasa de éxito general.
+Queda pendiente repetir T4 con Think OFF. Con una sola corrida por condición no se puede concluir qué efecto tiene ese modo.
 
-## Contenido del repositorio
+## Entorno de prueba
 
-- [CONTINUIDAD.md](CONTINUIDAD.md): contexto, protocolo, verificaciones y estado de las pruebas.
-- [PROMPT_T4_COMPLEJO.md](PROMPT_T4_COMPLEJO.md): tarea y protocolo propuesto para la comparación de T4.
-- [RECURSOS_QWEN.md](RECURSOS_QWEN.md): información del modelo y mediciones del entorno.
-- [evidencia/T1/](evidencia/T1/): conversación y modelo de FreeCAD de T1.
-- [benchmark_timer.py](benchmark_timer.py), [resultados_tiempo.csv](resultados_tiempo.csv) y [resultados_recursos.csv](resultados_recursos.csv): cronometraje y registro de recursos.
-- [Paquete completo de documentación y evidencias](freecad-evaluacion-documentacion-completa.zip): archivos originales de T1–T4, capturas, modelos y borrador del artículo. Descarga y descomprime el ZIP para consultar las carpetas de T2–T4 y el artículo.
+Las pruebas documentadas se realizaron con Qwen3.5-9B en formato GGUF Q4_K_M, LM Studio 0.4.26+4, FreeCAD 1.1.1 y una GPU NVIDIA RTX A6000 de 48 GB. Los detalles del modelo y las mediciones disponibles están en [RECURSOS_QWEN.md](RECURSOS_QWEN.md).
 
-## Próximos pasos
+## Archivos
 
-- Completar la prueba T4 con Think OFF en una sesión nueva y verificar la geometría independientemente.
-- Registrar de forma consistente la configuración y repetir los ensayos por condición.
-- Ampliar las tareas y evaluar otros modelos de pesos abiertos con el mismo protocolo.
+- [CONTINUIDAD.md](CONTINUIDAD.md): notas de trabajo, resultados y verificaciones de cada prueba.
+- [PROMPT_T4_COMPLEJO.md](PROMPT_T4_COMPLEJO.md): tarea y protocolo para la comparación de T4.
+- [evidencia/T1](evidencia/T1/): conversación y archivo de FreeCAD de T1.
+- [benchmark_timer.py](benchmark_timer.py): cronómetro y registro de recursos. Los datos guardados están en [resultados_tiempo.csv](resultados_tiempo.csv) y [resultados_recursos.csv](resultados_recursos.csv).
+- [Documentación completa y evidencias](freecad-evaluacion-documentacion-completa.zip): incluye los archivos de T1 a T4, capturas y el borrador del artículo. Las carpetas de T2 a T4 y el artículo se encuentran dentro del ZIP.
+
+## Pendiente
+
+Completar T4 con Think OFF, verificar la pieza resultante y repetir las pruebas con una configuración registrada de forma consistente. Más adelante se podrán añadir otros modelos y tareas.
 
 ## Referencias
 
 - [FreeCAD](https://github.com/FreeCAD/FreeCAD)
-- [Model Context Protocol: arquitectura](https://modelcontextprotocol.io/docs/learn/architecture)
-- [Qwen3.5-9B-GGUF en Hugging Face](https://huggingface.co/lmstudio-community/Qwen3.5-9B-GGUF)
+- [Model Context Protocol](https://modelcontextprotocol.io/docs/learn/architecture)
+- [Qwen3.5-9B-GGUF](https://huggingface.co/lmstudio-community/Qwen3.5-9B-GGUF)
