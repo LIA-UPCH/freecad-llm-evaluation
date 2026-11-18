@@ -2,13 +2,9 @@
 
 Este repositorio reúne las pruebas de un estudio sobre el uso de modelos de lenguaje de pesos abiertos para crear piezas en FreeCAD. Las tareas se ejecutan desde LM Studio mediante un servidor MCP y luego se revisan en FreeCAD.
 
-Por ahora se ha probado Qwen3.5-9B en cuatro tareas. El trabajo está en una etapa inicial: hay pocos ensayos y algunos incluyen reintentos, por lo que todavía no se puede calcular una tasa de éxito ni comparar modelos.
-
 ## Cómo se evalúan las piezas
 
 Cada tarea indica las dimensiones y operaciones que debe tener la pieza. Después de la ejecución, se revisan la validez de la forma, el número de sólidos, las dimensiones y las dependencias entre objetos. Cuando hay una pieza final, también se compara con una geometría de referencia construida por separado.
-
-Esta revisión importa porque un volumen correcto, por ejemplo, no garantiza que un agujero o un bolsillo esté en la posición pedida. Las comprobaciones realizadas por el modelo se contrastan con las hechas de forma independiente.
 
 ## Pruebas realizadas
 
@@ -18,8 +14,6 @@ Esta revisión importa porque un volumen correcto, por ejemplo, no garantiza que
 | T2 | Placa con cuatro agujeros | La geometría coincidió con la referencia. Se conservaron los cortes, aunque la placa base no es paramétrica editable. |
 | T3 | Placa con un bolsillo ciego | La pieza es válida y tiene el volumen esperado, pero el bolsillo quedó desplazado. |
 | T4 | Placa con agujeros y bolsillo | La corrida con Think ON terminó sin una pieza final verificable, después de errores y tiempos de espera. |
-
-Queda pendiente repetir T4 con Think OFF. Con una sola corrida por condición no se puede concluir qué efecto tiene ese modo.
 
 ## Entorno de prueba
 
